@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build is up to date
+        shell: powershell
+        run: .\build\Build.ps1 -Check
+
+      - name: Test suite (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\tests\Invoke-Tests.ps1 -WorkDirectory "$env:RUNNER_TEMP\dqe"
+
+      - name: Script loads in PowerShell 7
+        shell: pwsh
+        run: |
+          $env:DQE_IMPORT_ONLY = '1'
+          . .\Defender-Quarantine-Extractor.ps1
+          if (-not $DqeEngine) { throw 'engine not defined' }
+          . $DqeEngine
+          Write-Host 'PowerShell 7 parse and load OK'

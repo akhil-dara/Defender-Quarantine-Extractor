@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><!--DQE_TITLE--></title>
+<style>
+:root{
+  --bg:#f5f4f0; --surface:#ffffff; --panel:#edebe5; --ink:#1b1d21; --muted:#59606c; --line:#d9d5cc;
+  --accent:#8a4f00; --accent-soft:#fdf0d8; --danger:#a1242b; --ok:#1c6b3a; --warn:#8a5a00; --code:#f1efe9; --sel:#ffe2a8;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Mono","Cascadia Code",Consolas,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#14171c; --surface:#1b1f26; --panel:#171a20; --ink:#e6e9ee; --muted:#9aa3b2; --line:#2c333e;
+  --accent:#e8a33d; --accent-soft:#2d2414; --danger:#ff8f86; --ok:#74d39c; --warn:#f0c060; --code:#10131a; --sel:#5a431a;
+}}
+:root[data-theme="dark"]{
+  --bg:#14171c; --surface:#1b1f26; --panel:#171a20; --ink:#e6e9ee; --muted:#9aa3b2; --line:#2c333e;
+  --accent:#e8a33d; --accent-soft:#2d2414; --danger:#ff8f86; --ok:#74d39c; --warn:#f0c060; --code:#10131a; --sel:#5a431a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:16px}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important} }
+body{margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 var(--sans); -webkit-text-size-adjust:100%}
+::selection{background:var(--sel); color:var(--ink)}
+a{color:var(--accent); text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+.shell{display:grid; grid-template-columns:216px minmax(0,1fr); min-height:100vh}
+nav{position:sticky; top:0; align-self:start; height:100vh; overflow:auto; background:var(--panel); border-right:1px solid var(--line); padding:20px 12px}
+.brand{display:flex; gap:10px; align-items:center; padding:0 8px 16px}
+.brand img{width:30px; height:30px; border-radius:7px}
+.brand b{font-size:14px; font-weight:600; line-height:1.2}
+.brand span{display:block; color:var(--muted); font-size:12px; font-weight:400}
+nav a{display:flex; justify-content:space-between; gap:8px; padding:7px 10px; border-radius:6px; color:var(--ink); text-decoration:none; font-size:13px}
+nav a:hover{background:var(--surface)}
+nav a.on{background:var(--accent-soft); color:var(--accent); font-weight:600}
+nav a i{font-style:normal; color:var(--muted); font-variant-numeric:tabular-nums; font-size:12px}
+nav .tools{margin-top:16px; padding:12px 8px 0; border-top:1px solid var(--line); display:grid; gap:8px}
+main{padding:28px 32px 80px; max-width:1500px; min-width:0}
+h1{font-size:24px; line-height:1.25; font-weight:650; margin:0 0 4px; letter-spacing:-.01em; text-wrap:balance}
+h2{font-size:17px; font-weight:650; margin:44px 0 4px; padding-top:4px}
+h3{font-size:14px; font-weight:650; margin:22px 0 8px}
+.sub{color:var(--muted); margin:0 0 14px; max-width:78ch}
+.lede{color:var(--muted); margin:0 0 18px; max-width:80ch}
+section{scroll-margin-top:12px}
+.box{background:var(--surface); border:1px solid var(--line); border-radius:8px}
+dl.kv{display:grid; grid-template-columns:max-content minmax(0,1fr); gap:6px 18px; margin:0; padding:14px 16px}
+dl.kv dt{color:var(--muted); white-space:nowrap}
+dl.kv dd{margin:0; min-width:0; overflow-wrap:anywhere}
+.two{display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:16px}
+.facts{display:flex; flex-wrap:wrap; gap:6px 22px; padding:12px 16px; margin:0 0 16px; list-style:none; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+.facts b{font-variant-numeric:tabular-nums}
+code,.m{font-family:var(--mono); font-size:12.5px}
+.m{overflow-wrap:anywhere}
+.tw{overflow:auto; border:1px solid var(--line); border-radius:8px; background:var(--surface); max-height:70vh}
+table{border-collapse:collapse; width:100%; font-size:13px}
+th{position:sticky; top:0; z-index:1; background:var(--panel); text-align:left; font-weight:600; color:var(--muted); padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:7px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb, var(--accent-soft) 45%, transparent)}
+td.n,th.n{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.t{white-space:nowrap; font-family:var(--mono); font-size:12.5px; color:var(--muted)}
+.tag{display:inline-block; padding:1px 8px; border-radius:999px; border:1px solid var(--line); font-size:12px; white-space:nowrap; color:var(--muted)}
+.tag.ok{color:var(--ok); border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.tag.bad{color:var(--danger); border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+.tag.warn{color:var(--warn); border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+.threat{color:var(--danger); font-weight:600}
+.card{padding:16px; margin:0 0 14px}
+.card > header{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:baseline; margin-bottom:10px}
+.card > header strong{font-size:15px; overflow-wrap:anywhere}
+.hash{display:grid; grid-template-columns:64px minmax(0,1fr) auto; gap:4px 10px; align-items:center}
+.hash span{color:var(--muted)}
+button,.btn{font:inherit; font-size:12.5px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:4px 10px; cursor:pointer; min-height:28px}
+button:hover{border-color:var(--accent); color:var(--accent)}
+button:active{transform:translateY(1px)}
+button.done{color:var(--ok); border-color:var(--ok)}
+.bar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 10px}
+input[type=search]{font:inherit; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:6px 10px; min-width:260px; flex:1 1 260px; max-width:460px}
+input[type=search]::placeholder{color:var(--muted)}
+.chip{user-select:none}
+.chip[aria-pressed="true"]{background:var(--accent-soft); color:var(--accent); border-color:var(--accent)}
+details{margin:6px 0}
+summary{cursor:pointer; color:var(--accent); width:max-content; max-width:100%}
+pre{margin:8px 0 0; padding:12px; background:var(--code); border:1px solid var(--line); border-radius:6px; overflow:auto; max-height:460px; font:12.5px/1.5 var(--mono); white-space:pre-wrap; overflow-wrap:anywhere; tab-size:4}
+.note{padding:10px 14px; border-radius:8px; border:1px solid var(--line); background:var(--surface); margin:0 0 10px; max-width:100ch}
+.note.warn{border-color:color-mix(in srgb,var(--warn) 50%,var(--line))}
+.note.error{border-color:color-mix(in srgb,var(--danger) 55%,var(--line))}
+.empty{padding:18px 16px; color:var(--muted)}
+.count{color:var(--muted); font-weight:400; font-size:13px; margin-left:6px}
+.muted{color:var(--muted)}
+.nowrap{white-space:nowrap}
+footer{margin-top:56px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--line); padding-top:14px}
+#boot{padding:48px 32px; color:var(--muted)}
+*{scrollbar-color:var(--line) transparent; scrollbar-width:thin}
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  nav{position:static; height:auto; display:flex; flex-wrap:wrap; gap:4px; padding:12px; border-right:0; border-bottom:1px solid var(--line)}
+  nav .brand{width:100%; padding-bottom:8px} nav .tools{display:flex; margin:0; padding:0; border:0}
+  main{padding:20px 16px 60px} dl.kv{grid-template-columns:1fr; gap:0 0} dl.kv dd{margin-bottom:8px}
+  .hash{grid-template-columns:1fr auto} .hash span{grid-column:1/-1}
+}
+@media print{
+  nav,.bar,button{display:none!important} .shell{display:block} main{padding:0; max-width:none}
+  .tw{max-height:none; overflow:visible} pre{max-height:none} body{background:#fff; color:#000; font-size:11px}
+  details > *{display:block} h2{break-after:avoid} .card,tr{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div id="boot">Decoding report data...</div>
+<div class="shell" id="app" hidden>
+  <nav aria-label="Sections">
+    <div class="brand"><img alt="" src="data:image/png;base64,/*DQE_EMBLEM*/"><b>Defender Quarantine Extractor<span id="navcase"></span></b></div>
+    <div id="navlinks"></div>
+    <div class="tools">
+      <button type="button" id="theme">Switch theme</button>
+      <button type="button" onclick="window.print()">Print</button>
+    </div>
+  </nav>
+  <main id="main"></main>
+</div>
+<script id="dqe-data" type="application/octet-stream">/*DQE_DATA*/</script>
+<script>
+(function(){
+"use strict";
+var KEY="/*DQE_KEY*/", ARCH=/*DQE_ARCHIVES*/;
+function b64(s){var bin=atob(s),n=bin.length,u=new Uint8Array(n);for(var i=0;i<n;i++)u[i]=bin.charCodeAt(i);return u;}
+var D;
+try{
+  var k=b64(KEY), raw=b64(document.getElementById("dqe-data").textContent.trim());
+  for(var i=0;i<raw.length;i++) raw[i]^=k[i%k.length];
+  D=JSON.parse(new TextDecoder("utf-8").decode(raw));
+}catch(e){ document.getElementById("boot").textContent="This report could not decode its embedded data: "+e.message; return; }
+
+function A(x){return Array.isArray(x)?x:(x==null||x===""?[]:[x]);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function size(n){n=Number(n)||0;if(n>=1073741824)return (n/1073741824).toFixed(2)+" GB";if(n>=1048576)return (n/1048576).toFixed(1)+" MB";if(n>=1024)return (n/1024).toFixed(1)+" KB";return n+" B";}
+function num(n){return (Number(n)||0).toLocaleString("en-US");}
+function leaf(p){p=String(p||"");var i=Math.max(p.lastIndexOf("\\"),p.lastIndexOf("/"));return i>=0?p.slice(i+1):p;}
+var copyStore=[];
+function copyBtn(text,label){copyStore.push(String(text==null?"":text));return '<button type="button" data-copy="'+(copyStore.length-1)+'">'+esc(label||"Copy")+'</button>';}
+function longText(v,label){
+  v=String(v==null?"":v);
+  if(v.length<=260 && v.indexOf("\n")<0) return '<span class="m">'+esc(v)+'</span>';
+  return '<details><summary>'+esc(label||"Show")+' ('+num(v.length)+' characters)</summary><div class="bar" style="margin:8px 0 0">'+copyBtn(v,"Copy text")+'</div><pre>'+esc(v)+'</pre></details>';
+}
+function kv(rows){var h='<dl class="kv">';rows.forEach(function(r){if(r&&r[1]!==""&&r[1]!=null)h+='<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd>';});return h+'</dl>';}
+function table(cols,rows,cls){
+  if(!rows.length) return '<div class="box empty">Nothing to show.</div>';
+  return '<div class="tw"><table'+(cls?' class="'+cls+'"':'')+'><thead><tr>'+cols.map(function(c){return '<th'+(c.n?' class="n"':'')+'>'+esc(c.h)+'</th>';}).join("")+'</tr></thead><tbody>'+
+    rows.map(function(r){return '<tr>'+cols.map(function(c){return '<td'+(c.c?' class="'+c.c+'"':(c.n?' class="n"':''))+'>'+c.f(r)+'</td>';}).join("")+'</tr>';}).join("")+'</tbody></table></div>';
+}
+function bag(props){
+  return table([
+    {h:"Property",f:function(p){return '<span class="m">'+esc(p.k)+'</span>';}},
+    {h:"Value",f:function(p){
+      if(A(p.c).length) return '<details><summary>Nested properties ('+A(p.c).length+')</summary>'+bag(A(p.c))+'</details>';
+      var v=p.v===true?"true":p.v===false?"false":p.v;
+      var extra=(p.ft?' <span class="muted nowrap">= '+esc(p.ft)+' UTC</span>':'')+(p.cut?' <span class="tag warn">shortened here, full text is in the archive</span>':'');
+      return longText(v,"Show value")+extra;
+    }},
+    {h:"Size",n:1,f:function(p){return p.len!=null?size(p.len):"";}},
+    {h:"SHA-256",f:function(p){return p.sha256?'<span class="m muted">'+esc(p.sha256)+'</span>':"";}}
+  ],A(props));
+}
+
+var M=D.meta||{}, S=A(D.samples), H=A(D.hives), E=A(D.entries), DH=A(D.history), T=A(D.timeline), ST=A(D.stores), SC=A(D.scans), INV=A(D.inventory), EV=A(D.events);
+var NOTES=A(ARCH&&ARCH.notes?ARCH.notes:D.notes);
+var resCount=E.reduce(function(a,e){return a+A(e.resources).length;},0);
+var threats={}; E.forEach(function(e){if(e.threat)threats[e.threat]=1;}); DH.forEach(function(d){if(d.threat)threats[d.threat]=1;});
+var threatList=Object.keys(threats);
+var out=[], navs=[];
+function sec(id,title,count,html,sub){
+  navs.push([id,title,count]);
+  out.push('<section id="'+id+'"><h2>'+esc(title)+(count!=null?'<span class="count">'+num(count)+'</span>':'')+'</h2>'+(sub?'<p class="sub">'+sub+'</p>':'')+html+'</section>');
+}
+
+/* ---- overview */
+(function(){
+  var h='<ul class="facts">'+
+    '<li><b>'+num(S.length)+'</b> file'+(S.length===1?'':'s')+' recovered</li>'+
+    '<li><b>'+num(H.length)+'</b> registry hive'+(H.length===1?'':'s')+'</li>'+
+    '<li><b>'+num(E.length)+'</b> quarantine entr'+(E.length===1?'y':'ies')+', <b>'+num(resCount)+'</b> resources</li>'+
+    '<li><b>'+num(DH.length)+'</b> detection history record'+(DH.length===1?'':'s')+'</li>'+
+    '<li><b>'+num(T.length)+'</b> timeline events</li>'+
+    '<li><b>'+num(ST.length)+'</b> scan store record'+(ST.length===1?'':'s')+'</li>'+
+    (EV.length?'<li><b>'+num(EV.length)+'</b> event log entr'+(EV.length===1?'y':'ies')+'</li>':'')+'</ul>';
+  if(threatList.length) h+='<p style="margin:0 0 16px">Threat name'+(threatList.length===1?'':'s')+': '+threatList.map(function(t){return '<span class="threat">'+esc(t)+'</span>';}).join(", ")+'</p>';
+  var def=M.defender;
+  h+='<div class="two"><div class="box">'+kv([
+      ["Case ID",M.caseId],["Title",M.title],["Analyst",M.analyst],["Description",M.description],
+      ["Generated",(M.generatedUtc||"")+" UTC"],["Tool",(M.tool||"")+" "+(M.version||"")]
+    ])+'</div><div class="box">'+kv([
+      ["Source",M.source],["Source type",M.sourceKind],
+      ["Source SHA-256",M.sourceSha256&&A(M.sources).length<2?'<span class="m">'+esc(M.sourceSha256)+'</span>':"",1],
+      ["Defender platform",def?def.product:""],["Engine",def?def.engine:""],["Security intelligence",def?def.antivirus+" (as of "+def.asOf+" UTC)":""]
+    ])+'</div></div>';
+  if(A(M.sources).length>1) h+='<h3>Sources</h3>'+table([
+    {h:"Source",f:function(r){return '<span class="m">'+esc(r.path)+'</span>';}},{h:"Type",f:function(r){return esc(r.kind);}},
+    {h:"Size",n:1,f:function(r){return r.size?size(r.size):"";}},{h:"SHA-256",f:function(r){return '<span class="m">'+esc(r.sha256)+'</span>';}}],A(M.sources));
+  h+='<h3>Evidence archive</h3>';
+  var rows=[["Archive",M.archive],["Encryption",M.encryption],["Password",'<code>'+esc(M.password)+'</code> '+copyBtn(M.password,"Copy"),1],["Original artifacts included",M.rawScope==="all"?"Everything in the source":M.rawScope==="core"?"Files the tool analyses":"None"]];
+  if(ARCH&&ARCH.bundle){
+    rows.push(["Archive size",size(ARCH.bundle.size)]);
+    rows.push(["Archive SHA-256",'<span class="m">'+esc(ARCH.bundle.sha256)+'</span> '+copyBtn(ARCH.bundle.sha256,"Copy"),1]);
+    if(ARCH.verified>=0) rows.push(["Verification",'<span class="tag ok">Passed, '+num(ARCH.verified)+' item'+(ARCH.verified===1?'':'s')+'</span>',1]);
+  } else rows.push(["Archive SHA-256","Shown in the copy of this report saved next to the archive."]);
+  h+='<div class="box">'+kv(rows)+'</div>';
+  if(ARCH&&A(ARCH.samples).length){
+    h+='<h3>Individual archives</h3>'+table([
+      {h:"Zip",f:function(r){return '<span class="m">'+esc(r.file)+'</span>';}},{h:"Size",n:1,f:function(r){return size(r.size);}},
+      {h:"SHA-256",f:function(r){return '<span class="m">'+esc(r.sha256)+'</span>';}}],A(ARCH.samples));
+  }
+  h+='<p class="sub" style="margin-top:14px">All times are UTC.</p>';
+  out.push('<section id="overview"><h1>'+esc(M.title||"Defender quarantine extraction")+'</h1><p class="lede">'+esc(M.caseId?("Case "+M.caseId+" - "):"")+esc(M.source||"")+'</p>'+h+'</section>');
+  navs.push(["overview","Overview",null]);
+})();
+
+/* ---- recovered files */
+(function(){
+  var h="";
+  S.forEach(function(s){
+    var chk=s.hashCheck==="match"?'<span class="tag ok">Matches Defender record</span>':s.hashCheck==="mismatch"?'<span class="tag bad">Differs from Defender record</span>':'<span class="tag">No Defender hash recorded</span>';
+    h+='<article class="box card"><header><strong>'+esc(s.name)+'</strong><span class="threat">'+esc(s.threat)+'</span>'+chk+(s.truncated?'<span class="tag bad">Truncated</span>':'')+'</header>';
+    h+='<div class="hash">'+
+      '<span>SHA-256</span><span class="m">'+esc(s.sha256)+'</span>'+copyBtn(s.sha256)+
+      (s.sha1?'<span>SHA-1</span><span class="m">'+esc(s.sha1)+'</span>'+copyBtn(s.sha1):'')+
+      (s.md5?'<span>MD5</span><span class="m">'+esc(s.md5)+'</span>'+copyBtn(s.md5):'')+'</div>';
+    if(s.hashNote) h+='<p class="muted" style="margin:8px 0 0; max-width:95ch">'+esc(s.hashNote)+'</p>';
+    var pe=s.pe;
+    h+=kv([["Original path",'<span class="m">'+esc(s.path)+'</span>',1],["Type",s.type],["Size",size(s.size)+" ("+num(s.size)+" bytes)"],
+      ["PE link time",pe?pe.linkerTimestamp+" UTC":""],["Quarantined",s.quarantined?s.quarantined+" UTC":""],
+      ["Created",s.created?s.created+" UTC":""],["Modified",s.modified?s.modified+" UTC":""],["Accessed",s.accessed?s.accessed+" UTC":""],
+      ["Defender-recorded SHA-256",s.recordedSha256&&s.recordedSha256!==s.sha256?'<span class="m">'+esc(s.recordedSha256)+'</span>'+(s.recordedKind?' <span class="tag">'+esc(s.recordedKind)+'</span>':''):"",1],
+      ["In archive",'<span class="m">'+esc(s.archivePath)+'</span>',1],["Single-file zip",s.sampleZip?'<span class="m">'+esc(s.sampleZip)+'</span>':"",1],
+      ["Stored as",'<span class="m">'+esc(s.source)+'</span>',1],["Quarantine entry",A(s.entries).join(", ")]]).replace('class="kv"','class="kv" style="padding:12px 0 0"');
+    var st=A(s.streams);
+    if(st.length){
+      h+='<h3>Other streams stored with the file</h3>'+table([
+        {h:"Stream",f:function(r){return esc(r.kind)+(r.name?' <span class="m">'+esc(r.name)+'</span>':'');}},{h:"Size",n:1,f:function(r){return size(r.size);}},
+        {h:"In archive",f:function(r){return '<span class="m">'+esc(r.archivePath)+'</span>';}},
+        {h:"Content",f:function(r){
+          var c=""; if(r.text) c+=longText(r.text,"Show text");
+          var at=A(r.attributes); if(at.length) c+='<details><summary>'+at.length+' extended attribute'+(at.length===1?'':'s')+'</summary>'+table([
+            {h:"Name",f:function(a){return '<span class="m">'+esc(a.name)+'</span>';}},{h:"Size",n:1,f:function(a){return num(a.size);}},{h:"Value (hex)",f:function(a){return longText(a.value,"Show hex");}}],at)+'</details>';
+          return c;}}],st);
+    }
+    h+='</article>';
+  });
+  sec("files","Recovered files",S.length,h||'<div class="box empty">No file payloads were recovered. Check the Notes section and the quarantine entries below.</div>',
+    "Files recovered from the Defender quarantine store.");
+})();
+
+/* ---- hives */
+if(H.length) sec("hives","Quarantined registry data",H.length,table([
+  {h:"Resource",f:function(r){return esc(r.type)+'<br><span class="m">'+esc(r.path)+'</span>';}},
+  {h:"Threat",f:function(r){return '<span class="threat">'+esc(r.threat)+'</span>';}},
+  {h:"Quarantined",c:"t",f:function(r){return esc(r.quarantined);}},{h:"Size",n:1,f:function(r){return size(r.size);}},
+  {h:"SHA-256",f:function(r){return '<span class="m">'+esc(r.sha256)+'</span>';}},
+  {h:"In archive",f:function(r){return '<span class="m">'+esc(r.archivePath)+'</span>';}}],H),
+  "Registry keys and services removed by Defender, exported as registry hive files.");
+
+/* ---- entries */
+(function(){
+  var h="";
+  E.forEach(function(e){
+    h+='<article class="box card"><header><strong class="threat">'+esc(e.threat)+'</strong><span class="muted">'+esc(e.time)+' UTC</span></header>'+
+      kv([["Entry ID",'<span class="m">'+esc(e.id)+'</span>',1],["Scan ID",'<span class="m">'+esc(e.scanId)+'</span>',1],["Threat ID",e.threatId],["Stored as",'<span class="m">'+esc(e.source)+'</span>',1]]).replace('class="kv"','class="kv" style="padding:0 0 12px"')+
+      table([
+        {h:"Type",f:function(r){return '<span class="tag">'+esc(r.type)+'</span>';}},
+        {h:"Path",f:function(r){return '<span class="m">'+esc(r.path)+'</span>';}},
+        {h:"Size",n:1,f:function(r){return r.size?size(r.size):"";}},
+        {h:"Payload ID",f:function(r){return '<span class="m muted">'+esc(r.resourceId)+'</span>';}},
+        {h:"All fields",f:function(r){var f=A(r.fields);return f.length?'<details><summary>'+f.length+' field'+(f.length===1?'':'s')+'</summary>'+table([
+          {h:"ID",f:function(x){return '<span class="m">'+esc(x.id)+'</span>';}},{h:"Name",f:function(x){return esc(x.name);}},{h:"Value",f:function(x){return longText(x.value,"Show value");}}],f)+'</details>':"";}}
+      ],A(e.resources))+'</article>';
+  });
+  sec("entries","Quarantine entries",E.length,h||'<div class="box empty">No quarantine entry files were found in the source.</div>',
+    "Each entry is one remediation: the threat, when it was quarantined, and every resource Defender removed with it.");
+})();
+
+/* ---- timeline */
+(function(){
+  var kinds={}; T.forEach(function(e){kinds[e.k]=(kinds[e.k]||0)+1;});
+  var h='<div class="bar"><input type="search" id="tq" placeholder="Filter by text, path or hash" aria-label="Filter timeline">'+
+    Object.keys(kinds).sort().map(function(k){return '<button type="button" class="chip" data-kind="'+esc(k)+'" aria-pressed="true">'+esc(k)+' <span class="muted">'+kinds[k]+'</span></button>';}).join("")+
+    '<span class="muted" id="tcount"></span></div><div id="tl"></div>';
+  sec("timeline","Timeline",T.length,T.length?h:'<div class="box empty">No dated events were found. Detection logs may be missing from the source.</div>',
+    "Built from the quarantine entries, detection history, the MPLog and MPDetection logs and the event log, in time order.");
+})();
+
+/* ---- Windows event log */
+(function(){
+  if(!EV.length) return;
+  var srt=EV.slice().sort(function(a,b){return String(a.time).localeCompare(String(b.time));});
+  sec("events","Event log",EV.length,table([
+    {h:"Time (UTC)",c:"t",f:function(e){return esc(e.time);}},
+    {h:"Event",f:function(e){return '<span class="tag'+(/^(1006|1015|1116|1118|1119|1121|1123|1126|5001|5010|5012|5013)$/.test(String(e.id))?' bad':/^(1007|1117)$/.test(String(e.id))?' ok':'')+'">'+esc(e.id)+'</span> '+esc(e.name);}},
+    {h:"Detail",f:function(e){var d=e.data||{},k=Object.keys(d);return '<span class="m">'+esc(e.summary)+'</span>'+(k.length?'<details><summary>All fields ('+k.length+')</summary>'+table([{h:"Field",f:function(x){return esc(x);}},{h:"Value",f:function(x){return longText(d[x],"Show value");}}],k)+'</details>':'');}},
+    {h:"Source",f:function(e){return '<span class="muted nowrap">'+esc(e.source)+'</span>';}}],srt.slice(0,5000)),
+    "Defender's operational event log: detections, actions, quarantine restores and deletions, attack surface reduction and configuration changes.");
+})();
+
+/* ---- detection history */
+(function(){
+  var h="";
+  DH.forEach(function(d){
+    h+='<article class="box card"><header><strong class="threat">'+esc(d.threat)+'</strong>'+(d.status?'<span class="tag">'+esc(d.status)+'</span>':'')+'<span class="muted">'+esc(d.firstTime)+(d.lastTime&&d.lastTime!==d.firstTime?' to '+esc(d.lastTime):'')+' UTC</span></header>'+
+      kv([["Detection ID",'<span class="m">'+esc(d.detectionId)+'</span>',1],["Threat ID",d.threatId],["Severity",d.severity],["Category",d.category],
+          ["Quarantine entry",d.quarantineId?'<span class="m">'+esc(d.quarantineId)+'</span>':"",1],["Stored as",'<span class="m">'+esc(d.source)+'</span>',1]]).replace('class="kv"','class="kv" style="padding:0 0 12px"');
+    var tail=A(d.tail).concat(A(d.header));
+    if(tail.length) h+='<details><summary>Accounts, processes, times and raw header values ('+tail.length+')</summary>'+table([{h:"Field",f:function(x){return esc(x.name);}},{h:"Value",f:function(x){return '<span class="m">'+esc(x.value)+'</span>';}}],tail)+'</details>';
+    A(d.resources).forEach(function(r){
+      h+='<h3><span class="tag">'+esc(r.type)+'</span> <span class="m" style="font-weight:400">'+esc(r.path)+'</span></h3>'+(A(r.props).length?'<details><summary>Threat tracking properties ('+A(r.props).length+')</summary>'+bag(r.props)+'</details>':'');
+    });
+    h+='</article>';
+  });
+  if(DH.length) sec("history","Detection history",DH.length,h,"Defender's own record of each detection, including the hashes and signature details it tracked per resource.");
+})();
+
+/* ---- stores */
+(function(){
+  if(!ST.length) return;
+  var h="";
+  ST.forEach(function(s){
+    var p=A(s.props), get=function(k){for(var i=0;i<p.length;i++)if(p[i].k===k)return p[i].v;return "";};
+    var title=s.kind==="AMSI capture"?(get("AMSIContentName")||get("AMSIApp")):s.kind==="Scan context"?(get("CONTEXT_DATA_FILEPATH")||get("CONTEXT_DATA_FILENAME")):"";
+    h+='<article class="box card"><header><strong>'+esc(s.kind)+'</strong><span class="m muted">'+esc(s.id)+'</span></header>'+
+      (title?'<p class="m" style="margin:0 0 10px">'+esc(title)+'</p>':'')+'<details><summary>'+p.length+' propert'+(p.length===1?'y':'ies')+'</summary>'+bag(p)+'</details></article>';
+  });
+  sec("stores","Script captures and scan context",ST.length,h,
+    "Records from Defender's scan history store: script content it inspected through AMSI, and the context it kept for scanned files. Long values are collapsed; full text is also in the archive under decoded/store.");
+})();
+
+/* ---- scans */
+(function(){
+  if(!SC.length) return;
+  var hit=SC.filter(function(s){return A(s.threats).length;}), rest=SC.filter(function(s){return !A(s.threats).length;});
+  var cols=[
+    {h:"Start",c:"t",f:function(s){return esc(s.start);}},{h:"End",c:"t",f:function(s){return esc(s.end);}},{h:"Kind",f:function(s){return esc(s.kind);}},
+    {h:"Scan ID",f:function(s){return '<span class="m">'+esc(s.scanId)+'</span>';}},
+    {h:"Threats",f:function(s){return A(s.threats).map(function(t){return '<span class="threat">'+esc(t)+'</span>';}).join("<br>");}},
+    {h:"Resources",f:function(s){var r=A(s.resources);return r.length?'<details><summary>'+r.length+'</summary>'+r.map(function(x){return '<div><span class="tag">'+esc(x.type)+'</span> <span class="m">'+esc(x.path)+'</span></div>';}).join("")+'</details>':"";}}];
+  var srt=function(a,b){return String(a.start).localeCompare(String(b.start));};
+  var h=(hit.length?'<h3>Scans that found something</h3>'+table(cols,hit.sort(srt)):'<p class="sub">None of the stored scan results recorded a threat.</p>')+
+    (rest.length?'<details style="margin-top:14px"><summary>'+rest.length+' scan'+(rest.length===1?'':'s')+' with no detection</summary>'+table(cols.slice(0,4),rest.sort(srt))+'</details>':'');
+  sec("scans","Scan history",SC.length,h,"Stored scan results. Threat names and resources are read from the result records.");
+})();
+
+/* ---- inventory */
+(function(){
+  var kinds={entry:"Quarantine entry",resdata:"Quarantined payload",resmeta:"Payload index",dh:"Detection history",store:"Scan store",result:"Scan result",histlog:"History log",mpdet:"Detection log",mplog:"Protection log",evtx:"Event log",mpcmdrun:"MpCmdRun log",container:"Archive (opened)",other:"Other"};
+  var inZip=INV.filter(function(r){return r.inArchive;}).length, total=INV.reduce(function(a,r){return a+(Number(r.size)||0);},0);
+  var h='<div class="bar"><input type="search" id="iq" placeholder="Filter by path" aria-label="Filter source files"><span class="muted">'+num(inZip)+' of '+num(INV.length)+' copied into the archive under raw/ - '+size(total)+' in the source</span></div><div id="inv"></div>';
+  window.__inv=function(q){
+    q=(q||"").toLowerCase(); var rows=INV.filter(function(r){return !q||r.path.toLowerCase().indexOf(q)>=0;});
+    document.getElementById("inv").innerHTML=table([
+      {h:"Path in source",f:function(r){return '<span class="m">'+esc(r.path)+'</span>';}},{h:"Kind",f:function(r){return esc(kinds[r.kind]||r.kind);}},
+      {h:"Size",n:1,f:function(r){return size(r.size);}},{h:"Modified",c:"t",f:function(r){return esc(r.modified);}},
+      {h:"In archive",f:function(r){return r.inArchive?'<span class="tag ok">Copied</span>':'<span class="tag">Not copied</span>';}}],rows.slice(0,3000))+(rows.length>3000?'<p class="sub">Showing the first 3,000 of '+num(rows.length)+'. Use the filter to narrow.</p>':'');
+  };
+  sec("inventory","Source files",INV.length,h,"Every Defender artifact found in the source, and whether its original bytes were copied into the archive.");
+})();
+
+/* ---- notes */
+(function(){
+  var h=NOTES.length?NOTES.map(function(n){return '<div class="note '+esc(n.level)+'"><span class="tag '+(n.level==="error"?"bad":"warn")+'">'+esc(n.level==="error"?"Error":"Warning")+'</span> '+esc(n.text)+'</div>';}).join(""):'<div class="box empty">Everything in the source was read and decoded without warnings.</div>';
+  sec("notes","Notes",NOTES.length||null,h,"Anything that could not be read, decoded or verified during this run.");
+})();
+
+document.getElementById("main").innerHTML=out.join("")+'<footer>Generated by <a href="__DQE_REPO__" target="_blank" rel="noopener noreferrer">'+esc(M.tool||"")+'</a> '+esc(M.version||"")+' on '+esc(M.generatedUtc||"")+' UTC.</footer>';
+document.getElementById("navlinks").innerHTML=navs.map(function(n){return '<a href="#'+n[0]+'">'+esc(n[1])+(n[2]!=null?'<i>'+num(n[2])+'</i>':'')+'</a>';}).join("");
+document.getElementById("navcase").textContent=M.caseId||"";
+document.title=(M.caseId?M.caseId+" - ":"")+(M.title||"Defender quarantine extraction");
+document.getElementById("boot").remove(); document.getElementById("app").hidden=false;
+if(location.hash){var jump=document.getElementById(location.hash.slice(1)); if(jump){document.documentElement.style.scrollBehavior='auto'; jump.scrollIntoView({block:'start'}); setTimeout(function(){document.documentElement.style.scrollBehavior='';},0);}}
+
+/* ---- timeline rendering + filters */
+var off={};
+function drawTimeline(){
+  var el=document.getElementById("tl"); if(!el) return;
+  var q=(document.getElementById("tq").value||"").toLowerCase();
+  var rows=T.filter(function(e){return !off[e.k]&&(!q||(e.x+" "+e.src+" "+e.k+" "+(e.d||"")).toLowerCase().indexOf(q)>=0);});
+  document.getElementById("tcount").textContent=rows.length===T.length?"":num(rows.length)+" of "+num(T.length)+" shown";
+  el.innerHTML=rows.length?table([
+    {h:"Time (UTC)",c:"t",f:function(e){return esc(e.t);}},
+    {h:"Event",f:function(e){return '<span class="tag'+(/Detection|Blocked|block|Threat/.test(e.k)?' bad':/Remediation|Quarantined/.test(e.k)?' ok':'')+'">'+esc(e.k)+'</span>';}},
+    {h:"Detail",f:function(e){return '<span class="m">'+esc(e.x)+'</span>'+(e.d?'<details><summary>Full block</summary><pre>'+esc(e.d)+'</pre></details>':'');}},
+    {h:"Source",f:function(e){return '<span class="muted nowrap">'+esc(e.src)+'</span>';}}],rows.slice(0,5000)):'<div class="box empty">No events match. Clear the filter or turn an event type back on.</div>';
+}
+if(document.getElementById("tq")){
+  document.getElementById("tq").addEventListener("input",drawTimeline);
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"),function(b){b.addEventListener("click",function(){var k=b.getAttribute("data-kind");off[k]=!off[k];b.setAttribute("aria-pressed",off[k]?"false":"true");drawTimeline();});});
+  drawTimeline();
+}
+if(document.getElementById("iq")){ document.getElementById("iq").addEventListener("input",function(e){window.__inv(e.target.value);}); window.__inv(""); }
+
+/* ---- copy, theme, nav highlight */
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest?ev.target.closest("[data-copy]"):null; if(!b) return;
+  var text=copyStore[Number(b.getAttribute("data-copy"))], old=b.textContent;
+  var done=function(){b.textContent="Copied";b.classList.add("done");setTimeout(function(){b.textContent=old;b.classList.remove("done");},1400);};
+  var legacy=function(){var t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy");done();}catch(e){b.textContent="Copy failed";}document.body.removeChild(t);};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,legacy);}else legacy();
+});
+document.getElementById("theme").addEventListener("click",function(){
+  var r=document.documentElement, cur=r.getAttribute("data-theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  r.setAttribute("data-theme",cur==="dark"?"light":"dark");
+});
+if("IntersectionObserver" in window){
+  var links={}; Array.prototype.forEach.call(document.querySelectorAll("#navlinks a"),function(a){links[a.getAttribute("href").slice(1)]=a;});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){Object.keys(links).forEach(function(k){links[k].classList.remove("on");});if(links[e.target.id])links[e.target.id].classList.add("on");}});},{rootMargin:"-10% 0px -80% 0px"});
+  Array.prototype.forEach.call(document.querySelectorAll("main section"),function(s){io.observe(s);});
+}
+})();
+</script>
+</body>
+</html>
